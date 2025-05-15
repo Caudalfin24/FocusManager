@@ -122,6 +122,17 @@ class Scorer:
         return face_img
             
     def score(self, img, alpha = 0.3, beta=0.3, gamma=0.4):
+        """输入图像及评分权重超参数，计算专注度评分
+
+        Args:
+            img (MatLike): 输入的 OpenCV 图像.
+            alpha (float, optional): 基准评分权重. Defaults to 0.3.
+            beta (float, optional): 头部姿态估计评分权重. Defaults to 0.3.
+            gamma (float, optional): 情感识别评分权重. Defaults to 0.4.
+
+        Returns:
+            float: 评分
+        """
         img = self.clip_face(img)
         if img is None:
             return 0.0
@@ -143,11 +154,11 @@ class Scorer:
         score = alpha * 100 + beta * head_score + gamma * emotion_score
         return score
     
+if __name__ == "__main__":   
+    model_path = "../model/emotion_net_best.pth"
+    pic_path = "../model/data/FER2013/test/angry/PrivateTest_12766285.jpg"
 
-model_path = "../model/emotion_net_best.pth"
-pic_path = "../model/data/FER2013/test/angry/PrivateTest_12766285.jpg"
-
-scorer = Scorer(model_path)
-img = cv2.imread(pic_path)
-score = scorer.score(img)
-print(score)
+    scorer = Scorer(model_path)
+    img = cv2.imread(pic_path)
+    score = scorer.score(img)
+    print(score)

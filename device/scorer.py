@@ -45,28 +45,32 @@ class Scorer:
         return self.emotion_labels[pred]
     
     def estimate_head_pose(self, img):
-        """输入图像，进行头部姿态估计，返回 pitch、yaw、roll
+        """输入图像，进行头部姿态估计，返回 pitch、yaw、roll、裁剪人脸图像
 
         Args:
             img (MatLike): 输入的 OpenCV 人脸图像
         
         Returns:
-            (float, float, float): 返回 pitch, yaw, roll
+            (float, float, float, MatLike): 返回 pitch, yaw, roll 以及人脸裁剪图像
         """
-        # rgb = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
         results = self.face_mesh.process(img)
         if not results.multi_face_landmarks:
-            return None, None, None
+            print("Face Detect Missed")
+            return None, None, None, None
         face_landmarks = results.multi_face_landmarks[0]
         img_h, img_w = img.shape[:2]
         
         # 获取关键点
         landmark_idxs = [1,152,33,263,61,291]
         image_points = []
+        xs, ys = [], []
         for idx in landmark_idxs:
             lm = face_landmarks.landmark[idx]
             x, y = int(lm.x * img_w), int(lm.y * img_h)
             image_points.append((x,y))
+            xs.append(x)
+            ys.append(y)
+            
         image_points = np.array(image_points, dtype='double')
         model_points = np.float32([
             [0.0, 0.0, 0.0],
@@ -98,28 +102,13 @@ class Scorer:
         pitch = pitch + 180
         if pitch >= 180:
             pitch -= 360
-        return pitch, yaw, roll
-    
-    def clip_face(self, img):
-        """识别人脸并返回人脸图像
-
-        Args:
-            img (MatLike): 输入的 OpenCV 图像
-
-        Returns:
-            MatLike: 识别的人脸图像，若无，返回 None
-        """
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         
-        faces = self.face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
+        # 计算人脸边界框，适当扩展一点边界避免裁剪过紧
+        x_min, x_max = max(min(xs) - 10, 0), min(max(xs) + 10, img_w)
+        y_min, y_max = max(min(ys) - 10, 0), min(max(ys) + 10, img_h)
+        face_img = img[y_min:y_max, x_min:x_max].copy()
         
-        if len(faces) == 0:
-            print("Face Detect Missed.")
-            return None
-        (x,y,w,h) = faces[0]
-        print("Face Detected:", x,y,w,h)
-        face_img = img[y:y+h, x:x+w]
-        return face_img
+        return pitch, yaw, roll, face_img
             
     def score(self, img, alpha = 0.3, beta=0.3, gamma=0.4):
         """输入图像及评分权重超参数，计算专注度评分
@@ -132,14 +121,10 @@ class Scorer:
 
         Returns:
             float: 评分
-        """
-        img = self.clip_face(img)
-        if img is None:
-            return 0.0
-        
+        """        
         # 头部姿态检测
-        pitch, yaw, roll = self.estimate_head_pose(img)
-        if pitch == None:
+        pitch, yaw, roll, face_img = self.estimate_head_pose(img)
+        if face_img is None:
             return 0.0
         print("Head Position:", pitch, yaw, roll)
         head_score = - pitch - 7/3 * yaw + 95 
@@ -147,7 +132,8 @@ class Scorer:
             head_score = 0.0
             
         # 情感检测
-        emotion = self.predict_emotion(img)
+        
+        emotion = self.predict_emotion(face_img)
         print('Predict Emotion:', emotion)
         emotion_score = self.emotion_scores[emotion]
         

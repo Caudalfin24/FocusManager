@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>专注记录</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+    <h1> 数据统计 </h1>
+    <!-- 顶部状态卡片 -->
+    <div class="status-cards">
+        <div class="status-card light">
+            <i class="fas fa-lightbulb icon"></i>
+            当前光照：<strong>{{ light_value }}</strong> lx
+        </div>
+        <div class="status-card noise">
+            <i class="fas fa-volume-up icon"></i>
+            当前噪声：<strong>{{ noise_value }}</strong> dB
+        </div>
+    </div>
+    
+
+    <h2>专注记录列表</h2>
+    <!-- 专注记录卡片列表 -->
+    {% for record in records %}
+        <div class="card">
+            <a href="{{ url_for('detail', record_id=record.id) }}">
+                <div class="card-content">
+                    <div class="card-icon">
+                        {% if record.type == '番茄钟' %}
+                            <i class="fas fa-apple-alt"></i>
+                        {% else %}
+                            <i class="fas fa-stopwatch"></i>
+                        {% endif %}
+                    </div>
+                    <div class="card-text">
+                        <div class="type"><strong>{{ record.type }}</strong></div>
+                        <div class="duration">{{ record.duration }} 分钟</div>
+                        <div class="datetime">{{ record.datetime }}</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    {% endfor %}
+
+</body>

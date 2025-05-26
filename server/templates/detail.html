@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>专注详情</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h2>专注详情</h2>
+    <div class="card">
+        <div class="type">类型：{{ record.type }}</div>
+        <div class="duration">时长：{{ record.duration }} 分钟</div>
+        <div class="datetime">时间：{{ record.datetime }}</div>
+
+        <div class="canvas-container">
+            <canvas id="focusChart" width="400" height="180"></canvas>
+        </div>
+
+        <a href="{{ url_for('index') }}"><button>返回</button></a>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('focusChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [...Array({{ record.focus_scores|length }}).keys()],
+                datasets: [{
+                    label: '专注度',
+                    data: {{ record.focus_scores }},
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.3,
+                    fill: true,
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    backgroundColor: 'rgb(152,251,152)'
+                }]
+            },
+            options: {
+                scales: {
+                    y: { min: 0, max: 1 }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,7 +1,8 @@
 from flask import Flask, render_template
-from data import records
-
+import data
 app = Flask(__name__)
+
+records = data.get_records()
 
 @app.route("/")
 def index():

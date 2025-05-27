@@ -25,11 +25,11 @@
     <h2>专注记录列表</h2>
     <!-- 专注记录卡片列表 -->
     {% for record in records %}
-        <div class="card">
+        <div class="card" data-focus-scores="{{ record.focus_scores }}">
             <a href="{{ url_for('detail', record_id=record.id) }}">
                 <div class="card-content">
                     <div class="card-icon">
-                        {% if record.type == '番茄钟' %}
+                        {% if record.type == 'Pomodoro' %}
                             <i class="fas fa-apple-alt"></i>
                         {% else %}
                             <i class="fas fa-stopwatch"></i>
@@ -44,5 +44,16 @@
             </a>
         </div>
     {% endfor %}
-
+    <script>
+        document.querySelectorAll('.card').forEach(card => {
+            const scores = JSON.parse(card.getAttribute('data-focus-scores') || '[]');
+            if (scores.length > 0) {
+                const avg = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(2);
+                const avgDiv = document.createElement('div');
+                avgDiv.className = 'average';
+                avgDiv.textContent = `${avg} 分`;
+                card.querySelector('.card-text').appendChild(avgDiv);
+            }
+        });
+    </script>
 </body>

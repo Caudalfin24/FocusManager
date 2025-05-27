@@ -4,32 +4,26 @@ from PIL import Image, ImageDraw, ImageFont
 import time
 
 class Screen:
-    def __init__(self, port=0x3C):
-        self.serial = i2c(port=1, address=0x3C)  # 确保这个地址与你的i2cdetect一致
+    def __init__(self, address=0x3C):
+        self.serial = i2c(port=1, address=address)  # 确保这个地址与你的i2cdetect一致
         self.device = ssd1306(self.serial, width=128, height=64)
         self.device.clear()
         self.font = ImageFont.load_default()
-        #  全局变量
-        self.loading_finished = False # 加载完成
     
     def disp_loading(self):
         """显示加载图像"""
-        while self.loading_finished == False:
-            for i in range(4):  # 循环显示 0~3 个点
+        # 创建空图像
+        image = Image.new("1", self.device.size)
+        draw = ImageDraw.Draw(image)
 
-                # 创建空图像
-                image = Image.new("1", self.device.size)
-                draw = ImageDraw.Draw(image)
+        # 居中显示 "LOADING"
+        text = "LOADING" + "..."
+        w, h = draw.textsize(text, font=self.font)
+        x = (self.device.width - w) // 2
+        y = (self.device.height - h) // 2
 
-                # 居中显示 "LOADING"
-                text = "LOADING" + "." * i
-                w, h = draw.textsize(text, font=self.font)
-                x = (self.device.width - w) // 2
-                y = (self.device.height - h) // 2
-
-                draw.text((x, y), text, font=self.font, fill=255)
-                self.device.display(image)
-                time.sleep(0.5)  # 每帧间隔
+        draw.text((x, y), text, font=self.font, fill=255)
+        self.device.display(image)
 
     def disp_prepared(self):
         """显示就绪图像（番茄）"""

@@ -11,11 +11,16 @@ class PomodoroTimer:
         self.forward_time = 0
         self.timer_thread = None
         self.forward_thread = None
+        # 加载评分器
         self.scorer = Scorer(model_path)
         # 摄像头
         self.frame = None
         self.capture_thread = threading.Thread(target=self._capture, daemon=True)
         self.capture_thread.start()
+        # 数据记录
+        self.record_scores = []
+        self.record_time = 0
+        self.record_length = 0
     
     def _capture(self):
         cap = cv2.VideoCapture(0)
@@ -48,6 +53,11 @@ class PomodoroTimer:
                 threading.Thread(target=self._score, daemon=True).start()
                 
         if self.remaining_time == 0:
+            # 记录并上传信息
+            # 重置信息
+            self.record_scores = []
+            self.record_time = 0
+            self.record_length = 0
             print("时间到！")
             
     def start_forward(self):
@@ -65,7 +75,13 @@ class PomodoroTimer:
                 # 执行新的线程运行打分，防止阻塞倒计时
                 threading.Thread(target=self._score, daemon=True).start()
             self.forward_time += 1
-    
+            
+        # 记录并上传信息
+        # 重置信息
+        self.record_scores = []
+        self.record_time = 0
+        self.record_length = 0
+        print("时间到！")   
     def stop(self):
         self.running = False
         print("计时已停止。")

@@ -13,11 +13,19 @@
     <div class="status-cards">
         <div class="status-card light">
             <i class="fas fa-lightbulb icon"></i>
-            当前光照：<strong>{{ light_value }}</strong> lx
+            {% if light_value %}
+                当前环境<strong>光照适宜</strong>
+            {% else %}
+                当前环境<strong>光照昏暗</strong>，已打开环境灯
+            {% endif %}
         </div>
         <div class="status-card noise">
             <i class="fas fa-volume-up icon"></i>
-            当前噪声：<strong>{{ noise_value }}</strong> dB
+            {% if noise_value %}
+                当前环境<strong>噪声较大</strong>
+            {% else %}
+                当前环境<strong>没有噪声</strong>
+            {% endif %}
         </div>
     </div>
     

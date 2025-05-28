@@ -22,6 +22,7 @@ def get_records():
     cnt = 1
     for data in response_datas:
         value = data['value']
+        print(value)
         if not isinstance(value.get('scores'), list):
             print("'scores' 不是数组" )
             continue
@@ -46,3 +47,19 @@ def get_records():
             continue
     print(records)
     return records
+
+def get_sensor():
+    url = "https://iot-api.heclouds.com/datapoint/history-datapoints"
+    headers = {
+        "Authorization": token
+    }
+    params = {
+        "product_id": pid,
+        "device_name": device_id,
+    }
+    response = requests.get(url, headers=headers, params=params)
+    light = response.json()['data']['datastreams'][3]['datapoints'][-1]['value']
+    noise = response.json()['data']['datastreams'][4]['datapoints'][-1]['value']
+    print(light, noise)
+    
+    return light, noise

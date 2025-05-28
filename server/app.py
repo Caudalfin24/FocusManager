@@ -3,13 +3,14 @@ import data
 app = Flask(__name__)
 
 records = data.get_records()
+light, noise = data.get_sensor()
 
 @app.route("/")
 def index():
     return render_template('index.html',
                            records=records,
-                           light_value=520,       # 模拟光照值（lx）
-                           noise_value=38.7)      # 模拟噪声值（dB）
+                           light_value=light,       # 模拟光照值（lx）
+                           noise_value=noise)      # 模拟噪声值（dB）
 
 @app.route("/detail/<int:record_id>")
 def detail(record_id):

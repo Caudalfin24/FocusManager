@@ -71,8 +71,41 @@ class OneNet:
         print("已上报数据:", payload)
         self.client.disconnect()
     
-    def report_sensor():
-        return
+    def report_light(self, value):
+        # 连接 MQTT 服务器
+        self.client.connect(broker, 1883, 60) 
+        # 循环等待消息
+        self.client.loop_start()
+        payload = {
+            "id": 123,
+            "dp": {
+                "light": [{
+                    "v": value
+                }],
+            }
+        }
+        # 发布数据
+        self.client.publish(publish_topic, json.dumps(payload), qos=1)
+        print("已上报数据:", payload)
+        self.client.disconnect()
+        
+    def report_noise(self, value):
+        # 连接 MQTT 服务器
+        self.client.connect(broker, 1883, 60) 
+        # 循环等待消息
+        self.client.loop_start()
+        payload = {
+            "id": 123,
+            "dp": {
+                "noise": [{
+                    "v": value
+                }],
+            }
+        }
+        # 发布数据
+        self.client.publish(publish_topic, json.dumps(payload), qos=1)
+        print("已上报数据:", payload)
+        self.client.disconnect()
 
 # if __name__ =="__main__":
 #     from datetime import datetime

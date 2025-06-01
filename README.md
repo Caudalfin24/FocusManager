@@ -116,10 +116,10 @@ https://localhost:5000
 
 ### 评分算法
 
-![[static/score.drawio.png]]
+![image](https://github.com/Caudalfin24/FocusManager/blob/main/static/score.drawio.png)
 
 
 ### 示例演示
 
 
-![[static/disp.png]]
+![image](https://github.com/Caudalfin24/FocusManager/blob/main/static/disp.png)

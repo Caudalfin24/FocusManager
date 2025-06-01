@@ -20,4 +20,4 @@ def detail(record_id):
     return render_template("detail.html", record=record)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)

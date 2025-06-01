@@ -16,14 +16,14 @@ def get_records():
         "limit": 100
     }
     response = requests.get(url, headers=headers, params=params)
-    response_datas = response.json()['data']['datastreams'][2]['datapoints']
-    
+    print(response.json()['data']['datastreams'][2])
+    response_datas = response.json()['data']['datastreams'][3]['datapoints']
     records = []
     cnt = 1
     for data in response_datas:
         value = data['value']
         print(value)
-        if not isinstance(value.get('scores'), list):
+        if not isinstance(value['scores'], list):
             print("'scores' 不是数组" )
             continue
         
@@ -63,3 +63,6 @@ def get_sensor():
     print(light, noise)
     
     return light, noise
+
+get_records()
+get_sensor()

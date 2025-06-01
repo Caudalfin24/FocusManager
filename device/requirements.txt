@@ -1,0 +1,13 @@
+gpiozero==2.0.1
+luma==2.3.20
+mediapipe==0.10.21
+numpy==1.23.5
+opencv_contrib_python==4.11.0.86
+opencv_python==4.11.0.86
+paho_mqtt==2.1.0
+Pillow==9.5.0
+Pillow==11.2.1
+torch==2.7.0+cu126
+torchvision==0.22.0
+vosk==0.3.45
+speech_recognition
